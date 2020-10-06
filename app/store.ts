@@ -1,14 +1,22 @@
-import { configureStore, getDefaultMiddleware, Action } from '@reduxjs/toolkit';
+import {
+	configureStore,
+	getDefaultMiddleware,
+	Action,
+	combineReducers,
+} from '@reduxjs/toolkit';
 import { createHashHistory } from 'history';
-import { routerMiddleware } from 'connected-react-router';
+import { routerMiddleware, connectRouter } from 'connected-react-router';
 import { createLogger } from 'redux-logger';
 import { ThunkAction } from 'redux-thunk';
 // eslint-disable-next-line import/no-cycle
-import createRootReducer from './rootReducer';
 
 export const history = createHashHistory();
-const rootReducer = createRootReducer(history);
-export type RootState = ReturnType<typeof rootReducer>;
+
+const reducer = combineReducers({
+	router: connectRouter(history),
+});
+
+export type RootState = ReturnType<typeof reducer>;
 
 const router = routerMiddleware(history);
 const middleware = [...getDefaultMiddleware(), router];
@@ -29,17 +37,13 @@ if (shouldIncludeLogger) {
 export const configuredStore = (initialState?: RootState) => {
 	// Create Store
 	const store = configureStore({
-		reducer: rootReducer,
+		reducer,
 		middleware,
 		preloadedState: initialState,
 	});
 
 	if (process.env.NODE_ENV === 'development' && module.hot) {
-		module.hot.accept(
-			'./rootReducer',
-			// eslint-disable-next-line global-require
-			() => store.replaceReducer(require('./rootReducer').default)
-		);
+		module.hot.accept(() => store.replaceReducer(reducer));
 	}
 	return store;
 };
