@@ -21,7 +21,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		<AppContainer>
 			<Provider store={store}>
 				<ConnectedRouter history={history}>
-					<App />
+					<div className="text-white bg-gray-900">
+						<App />
+					</div>
 				</ConnectedRouter>
 			</Provider>
 		</AppContainer>,

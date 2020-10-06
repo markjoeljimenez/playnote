@@ -5,6 +5,8 @@ module.exports = {
 		'import/no-extraneous-dependencies': 'off',
 		'react/jsx-indent': [2, 'tab'],
 		'global-require': [0],
+		'react/jsx-indent-props': [2, 'tab'],
+		'react/no-array-index-key': [0],
 	},
 	parserOptions: {
 		ecmaVersion: 2020,
