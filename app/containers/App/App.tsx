@@ -1,37 +1,19 @@
-import React, { useRef, useState, KeyboardEvent } from 'react';
+import React, { useRef, useState, KeyboardEvent, MouseEvent } from 'react';
 import { connect } from 'react-redux';
 import ReactPlayer from 'react-player';
+
+import format from '../../scripts/time';
 
 import SelectMedia from '../SelectMedia/SelectMedia';
 
 type Message = {
-	timeStamp: string;
+	timeStamp: number;
 	message: string;
 };
 
 type Props = {
 	media: string;
 };
-
-function format(value: number) {
-	let totalSeconds = value;
-
-	const hours = Math.floor(totalSeconds / 3600)
-		.toString()
-		.padStart(2, '0');
-
-	totalSeconds %= 3600;
-
-	const minutes = Math.floor(totalSeconds / 60)
-		.toString()
-		.padStart(2, '0');
-
-	const seconds = Math.floor(totalSeconds % 60)
-		.toString()
-		.padStart(2, '0');
-
-	return `${hours}:${minutes}:${seconds}`;
-}
 
 function App({ media }: Props) {
 	const playerRef = useRef<ReactPlayer | null>(null);
@@ -42,13 +24,19 @@ function App({ media }: Props) {
 			setMessages([
 				...messages,
 				{
-					timeStamp: format(playerRef.current?.getCurrentTime() ?? 0),
+					timeStamp: playerRef.current?.getCurrentTime() ?? 0,
 					message: e.currentTarget.value,
 				},
 			]);
 
 			e.currentTarget.value = '';
 		}
+	}
+
+	function handleTimestampClick(e: MouseEvent<HTMLButtonElement>) {
+		const { value } = e.currentTarget;
+
+		playerRef.current?.seekTo(parseFloat(value));
 	}
 
 	return (
@@ -67,7 +55,16 @@ function App({ media }: Props) {
 						<div className="flex-1 p-4 space-y-3 text-sm overflow-y-scroll">
 							{messages.map(({ timeStamp, message }, i) => (
 								<p key={i}>
-									<code className="font-semibold text-gray-600">{`[${timeStamp}]: `}</code>
+									<button
+										className="font-semibold text-gray-600 hover:text-gray-500"
+										type="button"
+										onClick={handleTimestampClick}
+										value={timeStamp}
+									>
+										<code>{`[${format(
+											timeStamp
+										)}]: `}</code>
+									</button>
 									<span>{message}</span>
 								</p>
 							))}

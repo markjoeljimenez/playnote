@@ -7,6 +7,9 @@ module.exports = {
 		'global-require': [0],
 		'react/jsx-indent-props': [2, 'tab'],
 		'react/no-array-index-key': [0],
+		radix: [0],
+		'react/jsx-one-expression-per-line': [0],
+		'react/jsx-closing-tag-location': [0],
 	},
 	parserOptions: {
 		ecmaVersion: 2020,
