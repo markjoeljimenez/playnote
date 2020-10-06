@@ -5,7 +5,8 @@ type State = {
 	media: string;
 };
 
-const DEFAULT_STATE = 'C:\\Users\\Mark Jimenez\\Downloads\\1.mp4';
+// const DEFAULT_STATE = 'C:\\Users\\Mark Jimenez\\Downloads\\1.mp4';
+const DEFAULT_STATE = null;
 
 const SelectMedia = (state = DEFAULT_STATE, { type, media }: State) => {
 	switch (type) {
