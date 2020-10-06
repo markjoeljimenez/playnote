@@ -11,10 +11,10 @@
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import path from 'path';
-import { app, BrowserWindow } from 'electron';
+import { app, BrowserWindow, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
-// import MenuBuilder from './menu';
+import MenuBuilder from './window/menu';
 
 export default class AppUpdater {
 	constructor() {
@@ -103,8 +103,18 @@ const createWindow = async () => {
 		mainWindow = null;
 	});
 
-	// const menuBuilder = new MenuBuilder(mainWindow);
-	// menuBuilder.buildMenu();
+	const menuBuilder = new MenuBuilder(mainWindow);
+	menuBuilder.buildMenu();
+
+	const CHANNEL_NAME = 'main';
+
+	/**
+	 * Add an IPC event listener for the channel
+	 */
+	ipcMain.on(CHANNEL_NAME, (event, data) => {
+		/** Show the request data */
+		menuBuilder.sendData(data);
+	});
 
 	// Remove this if your app does not use auto updates
 	// eslint-disable-next-line
@@ -135,3 +145,16 @@ app.on('activate', () => {
 	// dock icon is clicked and there are no other windows open.
 	if (mainWindow === null) createWindow();
 });
+
+// const test = (data) => {
+// 	const path = dialog.showSaveDialogSync({});
+
+// 	console.log(this.data);
+
+// 	if (path && this.data) {
+// 		fs.writeFile(path, this.data, (err) => {
+// 			if (err) throw err;
+// 		});
+// 	}
+// },
+// };

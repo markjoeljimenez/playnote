@@ -1,9 +1,17 @@
-import React, { useRef, useState, KeyboardEvent, MouseEvent } from 'react';
+import React, {
+	useRef,
+	useState,
+	KeyboardEvent,
+	MouseEvent,
+	useEffect,
+} from 'react';
+import { ipcRenderer } from 'electron';
 import { connect } from 'react-redux';
 import ReactPlayer from 'react-player';
 
 import SelectMedia from '../SelectMedia/SelectMedia';
 import Notes from '../Notes/Notes';
+import format from '../../scripts/time';
 
 type Message = {
 	timeStamp: number;
@@ -13,6 +21,8 @@ type Message = {
 type Props = {
 	media: string;
 };
+
+const CHANNEL_NAME = 'main';
 
 function App({ media }: Props) {
 	const playerRef = useRef<ReactPlayer | null>(null);
@@ -37,6 +47,20 @@ function App({ media }: Props) {
 
 		playerRef.current?.seekTo(parseFloat(value) - 1);
 	}
+
+	useEffect(() => {
+		const parsedText = messages.reduce(
+			(prev, curr) =>
+				// eslint-disable-next-line prefer-template
+				prev +
+				`[${curr.timeStamp}|${format(curr.timeStamp)}]: ${
+					curr.message
+				}\r\n`,
+			''
+		);
+
+		ipcRenderer.send(CHANNEL_NAME, parsedText);
+	}, [messages]);
 
 	return (
 		<div className="h-screen flex">
