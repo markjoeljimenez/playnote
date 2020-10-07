@@ -15,6 +15,7 @@ import {
 	setMessagesAction,
 	sortMessagesAction,
 	editMessageAction,
+	saveMessagesAction,
 } from './Notes.actions';
 import format from '../../scripts/time';
 import { Media } from '../SelectMedia/SelectMedia.actions';
@@ -34,6 +35,7 @@ type Props = {
 	editMessage(message: number, text?: string): void;
 	deleteMessage(message: number): void;
 	sortMessages(sort: boolean): void;
+	saveMessages(saved: boolean): void;
 	playerRef: React.MutableRefObject<ReactPlayer | null>;
 };
 
@@ -46,6 +48,7 @@ function Notes({
 	editMessage,
 	deleteMessage,
 	sortMessages,
+	saveMessages,
 	playerRef,
 }: Props) {
 	const [isSorted, setIsSorted] = useState<boolean>(false);
@@ -95,6 +98,10 @@ function Notes({
 			0,
 			notes?.messages.length
 		);
+
+		ipcRenderer.on('SAVED', (event, saved) => {
+			saveMessages(saved);
+		});
 
 		return () => {};
 	}, []);
@@ -279,6 +286,7 @@ function mapDispatchToProps(dispatch: any) {
 		deleteMessage: (message: number) =>
 			dispatch(deleteMessageAction(message)),
 		sortMessages: (sort: boolean) => dispatch(sortMessagesAction(sort)),
+		saveMessages: (saved: boolean) => dispatch(saveMessagesAction(saved)),
 	};
 }
 

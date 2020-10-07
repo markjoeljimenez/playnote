@@ -2,6 +2,7 @@ import { Message } from './Notes';
 import {
 	DELETE_MESSAGE,
 	EDIT_MESSAGE,
+	SAVE_MESSAGES,
 	SET_MESSAGES,
 	SORT_MESSAGES,
 } from './Notes.actions';
@@ -30,7 +31,6 @@ const NotesReducers = (
 ) => {
 	switch (type) {
 		case SET_MESSAGES:
-			console.log(messages, saved);
 			return {
 				...state,
 				messages,
@@ -75,6 +75,12 @@ const NotesReducers = (
 				saved: false,
 			};
 		}
+
+		case SAVE_MESSAGES:
+			return {
+				...state,
+				saved,
+			};
 
 		default:
 			return state;

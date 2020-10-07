@@ -2,6 +2,7 @@ export const SET_MESSAGES = 'SET_MESSAGES';
 export const EDIT_MESSAGE = 'EDIT_MESSAGE';
 export const DELETE_MESSAGE = 'DELETE_MESSAGE';
 export const SORT_MESSAGES = 'SORT_MESSAGES';
+export const SAVE_MESSAGES = 'SAVE_MESSAGES';
 
 export type Message = {
 	timeStamp: number;
@@ -34,5 +35,12 @@ export function sortMessagesAction(sort: boolean) {
 	return {
 		type: SORT_MESSAGES,
 		sort,
+	};
+}
+
+export function saveMessagesAction(saved: boolean) {
+	return {
+		type: SAVE_MESSAGES,
+		saved,
 	};
 }

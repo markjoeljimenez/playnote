@@ -252,6 +252,11 @@ export default class MenuBuilder {
 							if (path && this.data?.text) {
 								fs.writeFile(path, this.data.text, (err) => {
 									if (err) throw err;
+
+									this.mainWindow.webContents.send(
+										'SAVED',
+										true
+									);
 								});
 							}
 						},
