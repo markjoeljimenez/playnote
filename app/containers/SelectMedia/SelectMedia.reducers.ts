@@ -1,5 +1,4 @@
-import { Media } from './SelectMedia';
-import { SET_MEDIA } from './SelectMedia.actions';
+import { Media, SET_MEDIA } from './SelectMedia.actions';
 
 type State = {
 	type: string;

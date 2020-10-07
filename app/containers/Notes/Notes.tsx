@@ -16,14 +16,10 @@ import {
 	setMessagesAction,
 	editMessageAction,
 	saveMessagesAction,
+	Message,
 } from './Notes.actions';
 import format from '../../scripts/time';
 import { Media } from '../SelectMedia/SelectMedia.actions';
-
-export type Message = {
-	timeStamp: number;
-	message: string;
-};
 
 type Props = {
 	media: Media;

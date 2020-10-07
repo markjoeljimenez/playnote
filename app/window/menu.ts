@@ -7,6 +7,7 @@ import {
 	dialog,
 } from 'electron';
 import fs from 'fs';
+import path from 'path';
 
 interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
 	selector?: string;
@@ -239,7 +240,7 @@ export default class MenuBuilder {
 						label: '&Save',
 						accelerator: 'Ctrl+S',
 						click: () => {
-							const path = dialog.showSaveDialogSync({
+							const absolutePath = dialog.showSaveDialogSync({
 								defaultPath: this.data?.title,
 								filters: [
 									{
@@ -249,21 +250,45 @@ export default class MenuBuilder {
 								],
 							});
 
-							if (path && this.data?.text) {
-								fs.writeFile(path, this.data.text, (err) => {
-									if (err) throw err;
+							if (absolutePath && this.data?.text) {
+								fs.writeFile(
+									absolutePath,
+									this.data.text,
+									(err) => {
+										if (err) throw err;
 
-									this.mainWindow.webContents.send(
-										'SAVED',
-										true
-									);
-								});
+										this.mainWindow.webContents.send(
+											'SAVED',
+											true
+										);
+									}
+								);
 							}
 						},
 					},
 					{
 						label: '&Open',
 						accelerator: 'Ctrl+O',
+						click: () => {
+							const absolutePath = dialog.showOpenDialogSync({
+								filters: [
+									{
+										name: 'Video',
+										extensions: ['mkv', 'avi', 'mp4'],
+									},
+								],
+							});
+
+							if (absolutePath) {
+								this.mainWindow.webContents.send('OPEN', {
+									title: path.basename(
+										absolutePath[0],
+										path.extname(absolutePath[0])
+									),
+									path: absolutePath[0],
+								});
+							}
+						},
 					},
 					{
 						label: '&Close',

@@ -1,7 +1,7 @@
-import { Message } from './Notes';
 import {
 	DELETE_MESSAGE,
 	EDIT_MESSAGE,
+	Message,
 	SAVE_MESSAGES,
 	SET_MESSAGES,
 } from './Notes.actions';
@@ -27,12 +27,13 @@ const NotesReducers = (
 	{ type, messages, index, text, saved }: State
 ) => {
 	switch (type) {
-		case SET_MESSAGES:
+		case SET_MESSAGES: {
 			return {
 				...state,
 				messages,
 				saved,
 			};
+		}
 
 		case EDIT_MESSAGE: {
 			const arr = [...state.messages];

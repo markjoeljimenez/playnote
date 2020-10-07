@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import ReactPlayer from 'react-player/lazy';
 
 import SelectMedia from '../SelectMedia/SelectMedia';
-import Notes from '../Notes/Notes';
 import { Media } from '../SelectMedia/SelectMedia.actions';
+import Notes from '../Notes/Notes';
 
 type Props = {
 	media: Media;

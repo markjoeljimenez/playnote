@@ -1,52 +1,33 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { connect } from 'react-redux';
 import { ipcRenderer } from 'electron';
 
-import setMediaAction, { Media } from './SelectMedia.actions';
-import { setMessagesAction } from '../Notes/Notes.actions';
-import { Message } from '../Notes/Notes';
+import { Media, setMediaActionAndNotesAction } from './SelectMedia.actions';
 
 type Props = {
-	setMedia(media: Media): void;
-	setMessages(messages: Message[], saved?: boolean): void;
+	setMediaActionAndNotes(media: Media): void;
 };
 
-function SelectMedia({ setMedia, setMessages }: Props) {
+function SelectMedia({ setMediaActionAndNotes }: Props) {
 	function handleSelectMedia(e: React.ChangeEvent<HTMLInputElement>) {
 		const path = e.target.files?.[0].path;
 		const title = e.target.files?.[0].name.replace(/\.[^/.]+$/, '');
 
 		if (path && title) {
-			setMedia({
+			setMediaActionAndNotes({
 				title,
 				path,
 			});
-
-			const content = ipcRenderer.sendSync('GET_NOTES', {
-				path,
-			});
-
-			if (content) {
-				const transformedContent = content.map((s: string) => {
-					const time = s.match(/\[(.*?)\]:/g);
-					const message = s.split(time![0])[1].trim();
-
-					return {
-						timeStamp: time
-							? parseInt(
-									time[0]
-										.replace(/[[\]']+/g, '')
-										.split('|')[0]
-							  )
-							: undefined,
-						message,
-					};
-				}) as Message[];
-
-				setMessages(transformedContent);
-			}
 		}
 	}
+
+	useEffect(() => {
+		ipcRenderer.on('OPEN', (event, media) => {
+			setMediaActionAndNotes(media);
+		});
+
+		return () => {};
+	}, []);
 
 	return (
 		<input
@@ -66,9 +47,8 @@ function SelectMedia({ setMedia, setMessages }: Props) {
 
 function mapDispatchToProps(dispatch: any) {
 	return {
-		setMedia: (media: any) => dispatch(setMediaAction(media)),
-		setMessages: (messages: Message[], saved?: boolean) =>
-			dispatch(setMessagesAction(messages, saved)),
+		setMediaActionAndNotes: (media: any) =>
+			dispatch(setMediaActionAndNotesAction(media)),
 	};
 }
 
