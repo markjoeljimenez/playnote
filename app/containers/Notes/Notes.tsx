@@ -74,75 +74,69 @@ function Notes({ media, notes, setMessages, sortMessages, playerRef }: Props) {
 	}, [sort]);
 
 	return (
-		<>
-			<div className="flex-1 flex flex-col">
-				<div className="flex justify-end p-4 border-b border-gray-700">
-					<button
-						className="hover:bg-gray-700 text-white font-bold py-2 px-4 rounded border border-gray-700"
-						type="button"
-						onClick={handleSortClick}
-					>
-						Sort
-						{sort ? (
-							<svg
-								className="inline fill-current -mr-2"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								width="24"
-								height="24"
-							>
-								<g data-name="Layer 2">
-									<g data-name="chevron-down">
-										<rect
-											width="24"
-											height="24"
-											opacity="0"
-										/>
-										<path d="M12 15.5a1 1 0 0 1-.71-.29l-4-4a1 1 0 1 1 1.42-1.42L12 13.1l3.3-3.18a1 1 0 1 1 1.38 1.44l-4 3.86a1 1 0 0 1-.68.28z" />
-									</g>
+		<div className="flex-1 flex flex-col justify-between h-screen">
+			<div className="flex justify-end p-4 border-b border-gray-700">
+				<button
+					className="hover:bg-gray-700 text-white font-bold py-2 px-4 rounded border border-gray-700"
+					type="button"
+					onClick={handleSortClick}
+				>
+					Sort
+					{sort ? (
+						<svg
+							className="inline fill-current -mr-2"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							width="24"
+							height="24"
+						>
+							<g data-name="Layer 2">
+								<g data-name="chevron-down">
+									<rect width="24" height="24" opacity="0" />
+									<path d="M12 15.5a1 1 0 0 1-.71-.29l-4-4a1 1 0 1 1 1.42-1.42L12 13.1l3.3-3.18a1 1 0 1 1 1.38 1.44l-4 3.86a1 1 0 0 1-.68.28z" />
 								</g>
-							</svg>
-						) : (
-							<svg
-								className="inline fill-current -mr-2"
-								xmlns="http://www.w3.org/2000/svg"
-								viewBox="0 0 24 24"
-								width="24"
-								height="24"
-							>
-								<g data-name="Layer 2">
-									<g data-name="chevron-up">
-										<rect
-											width="24"
-											height="24"
-											transform="rotate(180 12 12)"
-											opacity="0"
-										/>
-										<path d="M16 14.5a1 1 0 0 1-.71-.29L12 10.9l-3.3 3.18a1 1 0 0 1-1.41 0 1 1 0 0 1 0-1.42l4-3.86a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1 0 1.42 1 1 0 0 1-.69.28z" />
-									</g>
+							</g>
+						</svg>
+					) : (
+						<svg
+							className="inline fill-current -mr-2"
+							xmlns="http://www.w3.org/2000/svg"
+							viewBox="0 0 24 24"
+							width="24"
+							height="24"
+						>
+							<g data-name="Layer 2">
+								<g data-name="chevron-up">
+									<rect
+										width="24"
+										height="24"
+										transform="rotate(180 12 12)"
+										opacity="0"
+									/>
+									<path d="M16 14.5a1 1 0 0 1-.71-.29L12 10.9l-3.3 3.18a1 1 0 0 1-1.41 0 1 1 0 0 1 0-1.42l4-3.86a1 1 0 0 1 1.4 0l4 4a1 1 0 0 1 0 1.42 1 1 0 0 1-.69.28z" />
 								</g>
-							</svg>
-						)}
-					</button>
-				</div>
-				<div className="flex-1 p-4 space-y-3 text-sm overflow-y-scroll">
-					{notes?.map(({ timeStamp, message }, i) => (
-						<p key={i}>
-							<code className="text-gray-600">
-								<button
-									className="font-semibold hover:text-gray-500"
-									type="button"
-									onClick={handleTimestampClick}
-									value={timeStamp}
-								>
-									{`[${format(timeStamp)}]`}
-								</button>
-								:{' '}
-							</code>
-							<span>{message}</span>
-						</p>
-					))}
-				</div>
+							</g>
+						</svg>
+					)}
+				</button>
+			</div>
+			<div className="flex-1 p-4 space-y-3 text-sm overflow-y-scroll">
+				{notes?.map(({ timeStamp, message }, i) => (
+					<p key={i}>
+						<code className="text-gray-600">
+							<button
+								className="font-semibold hover:text-gray-500"
+								type="button"
+								onClick={handleTimestampClick}
+								value={timeStamp}
+							>
+								{`[${format(timeStamp)}]`}
+							</button>
+							:{' '}
+						</code>
+						<span>{message}</span>
+					</p>
+				))}
 			</div>
 			<input
 				className="border-t border-gray-800 w-full bg-gray-900 p-4"
@@ -150,7 +144,7 @@ function Notes({ media, notes, setMessages, sortMessages, playerRef }: Props) {
 				placeholder="Message"
 				onKeyDown={handleMessageSubmit}
 			/>
-		</>
+		</div>
 	);
 }
 
