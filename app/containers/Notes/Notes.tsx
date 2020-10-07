@@ -75,7 +75,8 @@ function Notes({ media, notes, setMessages, sortMessages, playerRef }: Props) {
 
 	return (
 		<div className="flex-1 flex flex-col justify-between h-screen">
-			<div className="flex justify-end p-4 border-b border-gray-700">
+			<div className="flex justify-between items-baseline p-4 pl-6 border-b border-gray-700">
+				<p className="text-gray-600">Saved</p>
 				<button
 					className="hover:bg-gray-700 text-white font-bold py-2 px-4 rounded border border-gray-700"
 					type="button"
@@ -120,7 +121,7 @@ function Notes({ media, notes, setMessages, sortMessages, playerRef }: Props) {
 					)}
 				</button>
 			</div>
-			<div className="flex-1 p-4 space-y-3 text-sm overflow-y-scroll">
+			<div className="flex-1 p-4 px-6 space-y-3 text-sm overflow-y-scroll">
 				{notes?.map(({ timeStamp, message }, i) => (
 					<p key={i}>
 						<code className="text-gray-600">
