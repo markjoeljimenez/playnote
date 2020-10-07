@@ -3,7 +3,11 @@ import React, { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
 import { ipcRenderer } from 'electron';
 import ReactPlayer from 'react-player';
 
-import { setMessagesAction, sortMessagesAction } from './Notes.actions';
+import {
+	deleteMessageAction,
+	setMessagesAction,
+	sortMessagesAction,
+} from './Notes.actions';
 import format from '../../scripts/time';
 import { Media } from '../SelectMedia/SelectMedia.actions';
 
@@ -17,12 +21,20 @@ type Props = {
 	notes: Message[];
 	setMessages(messages: Message[]): void;
 	sortMessages(sort: boolean): void;
+	deleteMessage(message: number): void;
 	playerRef: React.MutableRefObject<ReactPlayer | null>;
 };
 
 const CHANNEL_NAME = 'main';
 
-function Notes({ media, notes, setMessages, sortMessages, playerRef }: Props) {
+function Notes({
+	media,
+	notes,
+	setMessages,
+	sortMessages,
+	deleteMessage,
+	playerRef,
+}: Props) {
 	const [sort, setSort] = useState<boolean>(false);
 
 	function handleMessageSubmit(e: KeyboardEvent<HTMLInputElement>) {
@@ -50,6 +62,12 @@ function Notes({ media, notes, setMessages, sortMessages, playerRef }: Props) {
 		playerRef.current?.seekTo(parseFloat(value) - 1);
 	}
 
+	function handleDeleteMessage(e: MouseEvent<HTMLButtonElement>) {
+		const { value } = e.currentTarget;
+
+		deleteMessage(parseInt(value));
+	}
+
 	useEffect(() => {
 		if (media) {
 			const text = notes.reduce(
@@ -75,7 +93,7 @@ function Notes({ media, notes, setMessages, sortMessages, playerRef }: Props) {
 
 	return (
 		<div className="flex-1 flex flex-col justify-between h-screen">
-			<div className="flex justify-between items-baseline p-4 pl-6 border-b border-gray-700">
+			<div className="flex justify-between items-baseline p-4 pl-6 border-b border-gray-800">
 				<p className="text-gray-600">Saved</p>
 				<button
 					className="hover:bg-gray-700 text-white font-bold py-2 px-4 rounded border border-gray-700"
@@ -121,23 +139,56 @@ function Notes({ media, notes, setMessages, sortMessages, playerRef }: Props) {
 					)}
 				</button>
 			</div>
-			<div className="flex-1 p-4 px-6 space-y-3 text-sm overflow-y-scroll">
-				{notes?.map(({ timeStamp, message }, i) => (
-					<p key={i}>
-						<code className="text-gray-600">
-							<button
-								className="font-semibold hover:text-gray-500"
-								type="button"
-								onClick={handleTimestampClick}
-								value={timeStamp}
-							>
-								{`[${format(timeStamp)}]`}
-							</button>
-							:{' '}
-						</code>
-						<span>{message}</span>
-					</p>
-				))}
+			<div className="flex-1 text-sm overflow-y-scroll">
+				<ul>
+					{notes?.map(({ timeStamp, message }, i) => (
+						<li
+							className="py-2 px-6 pr-12 hover:bg-gray-800 relative group"
+							key={i}
+						>
+							<code className="text-gray-600">
+								<button
+									className="font-semibold hover:text-gray-500"
+									type="button"
+									onClick={handleTimestampClick}
+									value={timeStamp}
+								>
+									{`[${format(timeStamp)}]`}
+								</button>
+								:{' '}
+							</code>
+							<span>{message}</span>
+							<div className="absolute inset-y-0 right-0 flex items-center pr-3">
+								<button
+									className="hidden group-hover:block"
+									type="button"
+									value={i}
+									onClick={handleDeleteMessage}
+								>
+									<svg
+										className="fill-current"
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										width="24"
+										height="24"
+									>
+										<g data-name="Layer 2">
+											<g data-name="close">
+												<rect
+													width="24"
+													height="24"
+													transform="rotate(180 12 12)"
+													opacity="0"
+												/>
+												<path d="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z" />
+											</g>
+										</g>
+									</svg>
+								</button>
+							</div>
+						</li>
+					))}
+				</ul>
 			</div>
 			<input
 				className="border-t border-gray-800 w-full bg-gray-900 p-4"
@@ -161,6 +212,8 @@ function mapDispatchToProps(dispatch: any) {
 		setMessages: (messages: Message[]) =>
 			dispatch(setMessagesAction(messages)),
 		sortMessages: (sort: boolean) => dispatch(sortMessagesAction(sort)),
+		deleteMessage: (message: number) =>
+			dispatch(deleteMessageAction(message)),
 	};
 }
 
