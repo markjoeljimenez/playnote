@@ -13,16 +13,20 @@ interface DarwinMenuItemConstructorOptions extends MenuItemConstructorOptions {
 	submenu?: DarwinMenuItemConstructorOptions[] | Menu;
 }
 
+type Data = {
+	title: string;
+	text: string;
+};
+
 export default class MenuBuilder {
 	mainWindow: BrowserWindow;
-
-	data: string | undefined;
+	data: Data | undefined;
 
 	constructor(mainWindow: BrowserWindow) {
 		this.mainWindow = mainWindow;
 	}
 
-	sendData(data: string) {
+	sendData(data: Data) {
 		this.data = data;
 	}
 
@@ -235,10 +239,20 @@ export default class MenuBuilder {
 						label: '&Save Notes',
 						accelerator: 'Ctrl+S',
 						click: () => {
-							const path = dialog.showSaveDialogSync({});
+							const path = dialog.showSaveDialogSync({
+								defaultPath: this.data?.title,
+								filters: [
+									{
+										name: 'Text Documents (*.txt)',
+										extensions: ['txt', 'text'],
+									},
+								],
+							});
 
-							if (path && this.data) {
-								fs.writeFile(path, this.data, (err) => {
+							console.log(this.data);
+
+							if (path && this.data?.text) {
+								fs.writeFile(path, this.data.text, (err) => {
 									if (err) throw err;
 								});
 							}

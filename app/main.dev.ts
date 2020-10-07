@@ -14,6 +14,8 @@ import path from 'path';
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { autoUpdater } from 'electron-updater';
 import log from 'electron-log';
+import fs from 'fs';
+
 import MenuBuilder from './window/menu';
 
 export default class AppUpdater {
@@ -114,6 +116,16 @@ const createWindow = async () => {
 	ipcMain.on(CHANNEL_NAME, (event, data) => {
 		/** Show the request data */
 		menuBuilder.sendData(data);
+	});
+
+	ipcMain.on('GET_NOTES', (event, data) => {
+		const text = fs
+			.readFileSync(data.path.replace(/\.[^/.]+$/, '.txt'), 'UTF-8')
+			.toString()
+			.split('\n')
+			.filter((s) => s !== '');
+
+		event.returnValue = text;
 	});
 
 	// Remove this if your app does not use auto updates

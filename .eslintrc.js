@@ -10,6 +10,7 @@ module.exports = {
 		radix: [0],
 		'react/jsx-one-expression-per-line': [0],
 		'react/jsx-closing-tag-location': [0],
+		'@typescript-eslint/lines-between-class-members': [0],
 	},
 	parserOptions: {
 		ecmaVersion: 2020,

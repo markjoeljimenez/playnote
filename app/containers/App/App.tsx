@@ -1,66 +1,54 @@
-import React, {
-	useRef,
-	useState,
-	KeyboardEvent,
-	MouseEvent,
-	useEffect,
-} from 'react';
-import { ipcRenderer } from 'electron';
+import React, { useEffect, useRef } from 'react';
 import { connect } from 'react-redux';
 import ReactPlayer from 'react-player';
+import { ipcRenderer } from 'electron';
 
-import SelectMedia from '../SelectMedia/SelectMedia';
-import Notes from '../Notes/Notes';
+import SelectMedia, { Media } from '../SelectMedia/SelectMedia';
+import Notes, { Message } from '../Notes/Notes';
 import format from '../../scripts/time';
-
-type Message = {
-	timeStamp: number;
-	message: string;
-};
+// import { ipcRenderer } from 'electron';
 
 type Props = {
-	media: string;
+	media: Media;
+	notes: Message[];
 };
 
 const CHANNEL_NAME = 'main';
 
-function App({ media }: Props) {
+function App({ media, notes }: Props) {
 	const playerRef = useRef<ReactPlayer | null>(null);
-	const [messages, setMessages] = useState<Message[]>([]);
+	// const [messages, setMessages] = useState<Message[]>([]);
+	// const [notesLoaded, setNotesLoaded] = useState<boolean>(false);
 
-	function handleMessageSubmit(e: KeyboardEvent<HTMLInputElement>) {
-		if (e.key === 'Enter' && e.currentTarget.value !== '') {
-			setMessages([
-				...messages,
-				{
-					timeStamp: playerRef.current?.getCurrentTime() ?? 0,
-					message: e.currentTarget.value,
-				},
-			]);
+	// useEffect(() => {
+	// 	console.log(props);
+	// }, [props]);
 
-			e.currentTarget.value = '';
-		}
-	}
+	// function handleTimestampClick(e: MouseEvent<HTMLButtonElement>) {
+	// 	const { value } = e.currentTarget;
 
-	function handleTimestampClick(e: MouseEvent<HTMLButtonElement>) {
-		const { value } = e.currentTarget;
-
-		playerRef.current?.seekTo(parseFloat(value) - 1);
-	}
+	// 	playerRef.current?.seekTo(parseFloat(value) - 1);
+	// }
 
 	useEffect(() => {
-		const parsedText = messages.reduce(
-			(prev, curr) =>
-				// eslint-disable-next-line prefer-template
-				prev +
-				`[${curr.timeStamp}|${format(curr.timeStamp)}]: ${
-					curr.message
-				}\r\n`,
-			''
-		);
+		if (media) {
+			const text = notes.reduce(
+				(prev, curr) =>
+					// eslint-disable-next-line prefer-template
+					prev +
+					`[${curr.timeStamp}|${format(curr.timeStamp)}]: ${
+						curr.message
+					}\r\n`,
+				''
+			);
 
-		ipcRenderer.send(CHANNEL_NAME, parsedText);
-	}, [messages]);
+			ipcRenderer.send(CHANNEL_NAME, {
+				title: media.title,
+				// path: media.path.replace(/\.[^/.]+$/, ''),
+				text,
+			});
+		}
+	}, [notes]);
 
 	return (
 		<div className="h-screen flex">
@@ -68,18 +56,14 @@ function App({ media }: Props) {
 				<>
 					<div className="flex-1">
 						<ReactPlayer
-							url={media}
+							url={media.path}
 							controls
 							width="100%"
 							ref={playerRef}
 						/>
 					</div>
 					<div className="border-l border-gray-800 w-2/6 flex flex-col">
-						<Notes
-							messages={messages}
-							handleTimestampClick={handleTimestampClick}
-							handleMessageSubmit={handleMessageSubmit}
-						/>
+						<Notes playerRef={playerRef} />
 					</div>
 				</>
 			) : (
@@ -91,8 +75,9 @@ function App({ media }: Props) {
 	);
 }
 
-function mapStateToProps({ media }: Props) {
+function mapStateToProps({ media, notes }: Props) {
 	return {
+		notes,
 		media,
 	};
 }

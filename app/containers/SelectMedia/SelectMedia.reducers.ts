@@ -1,14 +1,15 @@
+import { Media } from './SelectMedia';
 import { SET_MEDIA } from './SelectMedia.actions';
 
 type State = {
 	type: string;
-	media: string;
+	media: Media;
 };
 
 // const DEFAULT_STATE = 'C:\\Users\\Mark Jimenez\\Downloads\\1.mp4';
-const DEFAULT_STATE = null;
+const DEFAULT_STATE: Media | null = null;
 
-const SelectMedia = (state = DEFAULT_STATE, { type, media }: State) => {
+const SelectMediaReducers = (state = DEFAULT_STATE, { type, media }: State) => {
 	switch (type) {
 		case SET_MEDIA:
 			return media;
@@ -18,4 +19,4 @@ const SelectMedia = (state = DEFAULT_STATE, { type, media }: State) => {
 	}
 };
 
-export default SelectMedia;
+export default SelectMediaReducers;

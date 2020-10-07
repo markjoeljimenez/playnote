@@ -9,6 +9,7 @@ import { routerMiddleware, connectRouter } from 'connected-react-router';
 import { createLogger } from 'redux-logger';
 import { ThunkAction } from 'redux-thunk';
 
+import notes from './containers/Notes/Notes.reducers';
 import media from './containers/SelectMedia/SelectMedia.reducers';
 
 export const history = createHashHistory();
@@ -16,6 +17,7 @@ export const history = createHashHistory();
 const reducer = combineReducers({
 	router: connectRouter(history),
 	media,
+	notes,
 });
 
 export type RootState = ReturnType<typeof reducer>;

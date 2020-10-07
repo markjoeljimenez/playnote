@@ -1,35 +1,72 @@
-import React, { KeyboardEvent, MouseEvent } from 'react';
+import { connect } from 'react-redux';
+import React, { KeyboardEvent, MouseEvent, useEffect } from 'react';
+
+import setMessagesAction from './Notes.actions';
 import format from '../../scripts/time';
 
-type Message = {
+export type Message = {
 	timeStamp: number;
 	message: string;
 };
 
 type Props = {
-	messages: Message[];
-	handleTimestampClick(e: MouseEvent<HTMLButtonElement>): void;
-	handleMessageSubmit(e: KeyboardEvent<HTMLInputElement>): void;
+	media: any;
+	notes: Message[];
+	setMessages: any;
+	playerRef: any;
 };
 
-export default function Notes({
-	messages,
-	handleTimestampClick,
-	handleMessageSubmit,
-}: Props) {
+function Notes({ media, notes, setMessages, playerRef }: Props) {
+	function handleMessageSubmit(e: KeyboardEvent<HTMLInputElement>) {
+		if (e.key === 'Enter' && e.currentTarget.value !== '') {
+			setMessages([
+				...notes,
+				{
+					timeStamp: playerRef.current?.getCurrentTime() ?? 0,
+					message: e.currentTarget.value,
+				},
+			]);
+
+			e.currentTarget.value = '';
+		}
+	}
+
+	// useEffect(() => {
+	// 	if (media) {
+	// 		const text = notes.reduce(
+	// 			(prev, curr) =>
+	// 				// eslint-disable-next-line prefer-template
+	// 				prev +
+	// 				`[${curr.timeStamp}|${format(curr.timeStamp)}]: ${
+	// 					curr.message
+	// 				}\r\n`,
+	// 			''
+	// 		);
+
+	// 		ipcRenderer.sendSync(CHANNEL_NAME, {
+	// 			title: media.title,
+	// 			path: media.path,
+	// 			text,
+	// 		});
+	// 	}
+	// }, [notes]);
+
 	return (
 		<>
 			<div className="flex-1 p-4 space-y-3 text-sm overflow-y-scroll">
-				{messages.map(({ timeStamp, message }, i) => (
+				{notes?.map(({ timeStamp, message }, i) => (
 					<p key={i}>
-						<button
-							className="font-semibold text-gray-600 hover:text-gray-500"
-							type="button"
-							onClick={handleTimestampClick}
-							value={timeStamp}
-						>
-							<code>{`[${format(timeStamp)}]: `}</code>
-						</button>
+						<code className="text-gray-600">
+							<button
+								className="font-semibold hover:text-gray-500"
+								type="button"
+								// onClick={handleTimestampClick}
+								value={timeStamp}
+							>
+								{`[${format(timeStamp)}]`}
+							</button>
+							:{' '}
+						</code>
 						<span>{message}</span>
 					</p>
 				))}
@@ -43,3 +80,19 @@ export default function Notes({
 		</>
 	);
 }
+
+function mapStateToProps({ notes, media }) {
+	return {
+		media,
+		notes,
+	};
+}
+
+function mapDispatchToProps(dispatch: any) {
+	return {
+		setMessages: (messages: Message[]) =>
+			dispatch(setMessagesAction(messages)),
+	};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Notes);

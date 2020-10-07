@@ -1,18 +1,46 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { ipcRenderer } from 'electron';
 
-import setMedia from './SelectMedia.actions';
+import setMediaAction, { Media } from './SelectMedia.actions';
+import setMessagesAction from '../Notes/Notes.actions';
+import { Message } from '../Notes/Notes';
 
 type Props = {
-	setMedia(s: string): void;
+	setMedia(media: Media): void;
+	setMessages(messages: Message[]): void;
 };
 
-function SelectMedia(props: Props) {
+function SelectMedia({ setMedia, setMessages }: Props) {
 	function handleSelectMedia(e: React.ChangeEvent<HTMLInputElement>) {
 		const path = e.target.files?.[0].path;
+		const title = e.target.files?.[0].name.replace(/\.[^/.]+$/, '');
 
-		if (path) {
-			props.setMedia(path);
+		if (path && title) {
+			setMedia({
+				title,
+				path,
+			});
+
+			const content = ipcRenderer.sendSync('GET_NOTES', {
+				path,
+			});
+
+			const transformedContent = content.map((s: string) => {
+				const time = s.match(/\[(.*?)\]/g);
+				// const test = s.indexOf(time!);
+
+				return {
+					timeStamp: time
+						? parseInt(
+								time[0].replace(/[[\]']+/g, '').split('|')[0]
+						  )
+						: undefined,
+					message: 'test',
+				};
+			}) as Message[];
+
+			setMessages(transformedContent);
 		}
 	}
 
@@ -34,7 +62,9 @@ function SelectMedia(props: Props) {
 
 function mapDispatchToProps(dispatch: any) {
 	return {
-		setMedia: (media: any) => dispatch(setMedia(media)),
+		setMedia: (media: any) => dispatch(setMediaAction(media)),
+		setMessages: (messages: Message[]) =>
+			dispatch(setMessagesAction(messages)),
 	};
 }
 
