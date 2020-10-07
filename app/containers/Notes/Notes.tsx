@@ -1,12 +1,20 @@
 import { connect } from 'react-redux';
-import React, { KeyboardEvent, MouseEvent, useEffect, useState } from 'react';
+import React, {
+	KeyboardEvent,
+	MouseEvent,
+	useEffect,
+	useRef,
+	useState,
+} from 'react';
 import { ipcRenderer } from 'electron';
 import ReactPlayer from 'react-player';
+import ContentEditable, { ContentEditableEvent } from 'react-contenteditable';
 
 import {
 	deleteMessageAction,
 	setMessagesAction,
 	sortMessagesAction,
+	editMessageAction,
 } from './Notes.actions';
 import format from '../../scripts/time';
 import { Media } from '../SelectMedia/SelectMedia.actions';
@@ -20,8 +28,9 @@ type Props = {
 	media: Media;
 	notes: Message[];
 	setMessages(messages: Message[]): void;
-	sortMessages(sort: boolean): void;
+	editMessage(message: number, text?: string): void;
 	deleteMessage(message: number): void;
+	sortMessages(sort: boolean): void;
 	playerRef: React.MutableRefObject<ReactPlayer | null>;
 };
 
@@ -31,11 +40,15 @@ function Notes({
 	media,
 	notes,
 	setMessages,
-	sortMessages,
+	editMessage,
 	deleteMessage,
+	sortMessages,
 	playerRef,
 }: Props) {
-	const [sort, setSort] = useState<boolean>(false);
+	const [isSorted, setIsSorted] = useState<boolean>(false);
+	const messageRefs = useRef<(HTMLElement | null)[]>([]);
+
+	let editedMessage: string;
 
 	function handleMessageSubmit(e: KeyboardEvent<HTMLInputElement>) {
 		if (e.key === 'Enter' && e.currentTarget.value !== '') {
@@ -52,8 +65,7 @@ function Notes({
 	}
 
 	function handleSortClick(e: MouseEvent<HTMLButtonElement>) {
-		// setMessages(notes.sort((a, b) => a.timeStamp - b.timeStamp));
-		setSort(!sort);
+		setIsSorted(!isSorted);
 	}
 
 	function handleTimestampClick(e: MouseEvent<HTMLButtonElement>) {
@@ -68,6 +80,20 @@ function Notes({
 		deleteMessage(parseInt(value));
 	}
 
+	function handleEditMessage(e: ContentEditableEvent) {
+		const { value } = e.target;
+
+		editedMessage = value;
+	}
+
+	// Init refs
+	useEffect(() => {
+		messageRefs.current = messageRefs.current.slice(0, notes?.length);
+
+		return () => {};
+	}, []);
+
+	// Update notes and send to IPCMAIN
 	useEffect(() => {
 		if (media) {
 			const text = notes.reduce(
@@ -85,11 +111,16 @@ function Notes({
 				text,
 			});
 		}
+
+		return () => {};
 	}, [notes]);
 
+	// Sort
 	useEffect(() => {
-		sortMessages(!sort);
-	}, [sort]);
+		sortMessages(!isSorted);
+
+		return () => {};
+	}, [isSorted]);
 
 	return (
 		<div className="flex-1 flex flex-col justify-between h-screen">
@@ -101,7 +132,7 @@ function Notes({
 					onClick={handleSortClick}
 				>
 					Sort
-					{sort ? (
+					{isSorted ? (
 						<svg
 							className="inline fill-current -mr-2"
 							xmlns="http://www.w3.org/2000/svg"
@@ -157,7 +188,29 @@ function Notes({
 								</button>
 								:{' '}
 							</code>
-							<span>{message}</span>
+
+							<ContentEditable
+								innerRef={(ref: any) => {
+									messageRefs.current[i] = ref;
+								}}
+								html={message}
+								className="inline w-full focus:shadow-outline"
+								onChange={handleEditMessage}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter') {
+										e.preventDefault();
+
+										const index = messageRefs.current.findIndex(
+											(el) => el === e.currentTarget
+										);
+
+										editMessage(index, editedMessage);
+
+										e.currentTarget.blur();
+									}
+								}}
+							/>
+
 							<div className="absolute inset-y-0 right-0 flex items-center pr-3">
 								<button
 									className="hidden group-hover:block"
@@ -211,9 +264,11 @@ function mapDispatchToProps(dispatch: any) {
 	return {
 		setMessages: (messages: Message[]) =>
 			dispatch(setMessagesAction(messages)),
-		sortMessages: (sort: boolean) => dispatch(sortMessagesAction(sort)),
+		editMessage: (message: number, text?: string) =>
+			dispatch(editMessageAction(message, text)),
 		deleteMessage: (message: number) =>
 			dispatch(deleteMessageAction(message)),
+		sortMessages: (sort: boolean) => dispatch(sortMessagesAction(sort)),
 	};
 }
 
