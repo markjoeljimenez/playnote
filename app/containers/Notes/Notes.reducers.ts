@@ -4,14 +4,12 @@ import {
 	EDIT_MESSAGE,
 	SAVE_MESSAGES,
 	SET_MESSAGES,
-	SORT_MESSAGES,
 } from './Notes.actions';
 
 type State = {
 	type: string;
 	messages: Message[];
 	index: number;
-	sort: boolean;
 	text?: string;
 	saved?: boolean;
 };
@@ -27,7 +25,7 @@ const DEFAULT_STATE: {
 
 const NotesReducers = (
 	state = DEFAULT_STATE,
-	{ type, messages, index, sort, text, saved }: State
+	{ type, messages, index, text, saved }: State
 ) => {
 	switch (type) {
 		case SET_MESSAGES:
@@ -36,14 +34,6 @@ const NotesReducers = (
 				messages,
 				saved: saved ?? false,
 			};
-
-		// case SORT_MESSAGES:
-		// 	return {
-		// 		...state,
-		// 		messsages: [...state.messages].sort((a, b) =>
-		// 			sort ? a.timeStamp - b.timeStamp : b.timeStamp - a.timeStamp
-		// 		),
-		// 	};
 
 		case EDIT_MESSAGE: {
 			const arr = [...state.messages];
