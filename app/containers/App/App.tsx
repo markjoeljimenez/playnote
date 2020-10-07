@@ -1,6 +1,6 @@
 import React, { useRef } from 'react';
 import { connect } from 'react-redux';
-import ReactPlayer from 'react-player';
+import ReactPlayer from 'react-player/lazy';
 
 import SelectMedia from '../SelectMedia/SelectMedia';
 import Notes from '../Notes/Notes';
@@ -22,8 +22,12 @@ function App({ media }: Props) {
 							url={media.path}
 							controls
 							width="100%"
+							height="auto"
 							ref={playerRef}
 						/>
+						<div className="p-4 px-6">
+							<h1 className="text-2xl">{media.title}</h1>
+						</div>
 					</div>
 					<div className="border-l border-gray-800 w-2/6 flex flex-col">
 						<Notes playerRef={playerRef} />
