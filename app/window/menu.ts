@@ -236,7 +236,7 @@ export default class MenuBuilder {
 				label: '&File',
 				submenu: [
 					{
-						label: '&Save Notes',
+						label: '&Save',
 						accelerator: 'Ctrl+S',
 						click: () => {
 							const path = dialog.showSaveDialogSync({
@@ -248,8 +248,6 @@ export default class MenuBuilder {
 									},
 								],
 							});
-
-							console.log(this.data);
 
 							if (path && this.data?.text) {
 								fs.writeFile(path, this.data.text, (err) => {

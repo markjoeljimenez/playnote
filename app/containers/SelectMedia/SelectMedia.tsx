@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { ipcRenderer } from 'electron';
 
 import setMediaAction, { Media } from './SelectMedia.actions';
-import setMessagesAction from '../Notes/Notes.actions';
+import { setMessagesAction } from '../Notes/Notes.actions';
 import { Message } from '../Notes/Notes';
 
 type Props = {
