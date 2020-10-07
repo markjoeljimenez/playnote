@@ -119,13 +119,24 @@ const createWindow = async () => {
 	});
 
 	ipcMain.on('GET_NOTES', (event, data) => {
-		const text = fs
-			.readFileSync(data.path.replace(/\.[^/.]+$/, '.txt'), 'UTF-8')
-			.toString()
-			.split('\n')
-			.filter((s) => s !== '');
+		const file = data.path.replace(/\.[^/.]+$/, '.txt');
 
-		event.returnValue = text;
+		try {
+			if (fs.existsSync(file)) {
+				const text = fs
+					.readFileSync(file, 'UTF-8')
+					.toString()
+					.split('\n')
+					.filter((s) => s !== '');
+
+				event.returnValue = text;
+				return;
+			}
+		} catch (err) {
+			console.error(err);
+		}
+
+		event.returnValue = null;
 	});
 
 	// Remove this if your app does not use auto updates

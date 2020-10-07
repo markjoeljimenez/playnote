@@ -26,21 +26,25 @@ function SelectMedia({ setMedia, setMessages }: Props) {
 				path,
 			});
 
-			const transformedContent = content.map((s: string) => {
-				const time = s.match(/\[(.*?)\]:/g);
-				const message = s.split(time![0])[1].trim();
+			if (content) {
+				const transformedContent = content.map((s: string) => {
+					const time = s.match(/\[(.*?)\]:/g);
+					const message = s.split(time![0])[1].trim();
 
-				return {
-					timeStamp: time
-						? parseInt(
-								time[0].replace(/[[\]']+/g, '').split('|')[0]
-						  )
-						: undefined,
-					message,
-				};
-			}) as Message[];
+					return {
+						timeStamp: time
+							? parseInt(
+									time[0]
+										.replace(/[[\]']+/g, '')
+										.split('|')[0]
+							  )
+							: undefined,
+						message,
+					};
+				}) as Message[];
 
-			setMessages(transformedContent, true);
+				setMessages(transformedContent);
+			}
 		}
 	}
 

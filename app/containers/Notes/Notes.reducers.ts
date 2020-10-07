@@ -16,10 +16,10 @@ type State = {
 
 const DEFAULT_STATE: {
 	messages: Message[];
-	saved: boolean;
+	saved?: boolean;
 } = {
 	messages: [],
-	saved: true,
+	saved: undefined,
 };
 
 const NotesReducers = (
@@ -31,7 +31,7 @@ const NotesReducers = (
 			return {
 				...state,
 				messages,
-				saved: saved ?? false,
+				saved,
 			};
 
 		case EDIT_MESSAGE: {

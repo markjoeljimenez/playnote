@@ -9,6 +9,7 @@ import React, {
 import { ipcRenderer } from 'electron';
 import ReactPlayer from 'react-player';
 import ContentEditable, { ContentEditableEvent } from 'react-contenteditable';
+import clsx from 'clsx';
 
 import {
 	deleteMessageAction,
@@ -30,7 +31,7 @@ type Props = {
 		messages: Message[];
 		saved: boolean;
 	};
-	setMessages(messages: Message[]): void;
+	setMessages(messages: Message[], saved: boolean): void;
 	editMessage(message: number, text?: string): void;
 	deleteMessage(message: number): void;
 	saveMessages(saved: boolean): void;
@@ -56,13 +57,16 @@ function Notes({
 
 	function handleMessageSubmit(e: KeyboardEvent<HTMLInputElement>) {
 		if (e.key === 'Enter' && e.currentTarget.value !== '') {
-			setMessages([
-				...notes.messages,
-				{
-					timeStamp: playerRef.current?.getCurrentTime() ?? 0,
-					message: e.currentTarget.value,
-				},
-			]);
+			setMessages(
+				[
+					...notes.messages,
+					{
+						timeStamp: playerRef.current?.getCurrentTime() ?? 0,
+						message: e.currentTarget.value,
+					},
+				],
+				false
+			);
 
 			e.currentTarget.value = '';
 		}
@@ -134,11 +138,23 @@ function Notes({
 
 	return (
 		<div className="flex-1 flex flex-col justify-between h-screen">
-			<div className="flex justify-between items-baseline p-4 pl-6 border-b border-gray-800">
-				{notes.saved ? (
-					<p className="text-gray-600">Saved</p>
+			<div
+				className={clsx(
+					'flex items-baseline p-4 pl-6 border-b border-gray-800',
+					notes.saved !== undefined
+						? 'justify-between'
+						: 'justify-end'
+				)}
+			>
+				{/* eslint-disable-next-line no-nested-ternary */}
+				{notes.saved !== undefined ? (
+					notes.saved ? (
+						<p className="text-gray-600">Saved</p>
+					) : (
+						<p className="text-gray-300">Unsaved</p>
+					)
 				) : (
-					<p className="text-gray-300">Unsaved</p>
+					<></>
 				)}
 				<button
 					className="hover:bg-gray-700 text-white font-bold py-2 px-4 rounded border border-gray-700"
@@ -295,8 +311,8 @@ function mapStateToProps({ notes, media }) {
 
 function mapDispatchToProps(dispatch: any) {
 	return {
-		setMessages: (messages: Message[]) =>
-			dispatch(setMessagesAction(messages)),
+		setMessages: (messages: Message[], saved: boolean) =>
+			dispatch(setMessagesAction(messages, saved)),
 		editMessage: (message: number, text?: string) =>
 			dispatch(editMessageAction(message, text)),
 		deleteMessage: (message: number) =>
