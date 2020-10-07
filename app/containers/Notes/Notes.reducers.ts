@@ -14,7 +14,6 @@ type State = {
 	saved?: boolean;
 };
 
-// const DEFAULT_STATE: Message[] = [];
 const DEFAULT_STATE: {
 	messages: Message[];
 	saved: boolean;

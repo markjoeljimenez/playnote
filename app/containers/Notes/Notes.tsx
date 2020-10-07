@@ -50,6 +50,7 @@ function Notes({
 }: Props) {
 	const [isSorted, setIsSorted] = useState<boolean>();
 	const messageRefs = useRef<(HTMLElement | null)[]>([]);
+	const notesContainerRef = useRef<HTMLUListElement>(null);
 
 	let editedMessage: string;
 
@@ -122,6 +123,12 @@ function Notes({
 			});
 		}
 
+		// Always scroll notesContainer to bottom
+		if (notesContainerRef.current) {
+			notesContainerRef.current.scrollTop =
+				notesContainerRef.current?.scrollHeight;
+		}
+
 		return () => {};
 	}, [notes]);
 
@@ -186,88 +193,89 @@ function Notes({
 					)}
 				</button>
 			</div>
-			<div className="flex-1 text-sm">
-				<ul>
-					{notes.messages
-						?.sort((a, b) =>
-							// eslint-disable-next-line no-nested-ternary
-							isSorted !== undefined
-								? isSorted
-									? a.timeStamp - b.timeStamp
-									: b.timeStamp - a.timeStamp
-								: -1
-						)
-						.map(({ timeStamp, message }, i) => (
-							<li
-								className="py-2 px-6 pr-12 hover:bg-gray-800 relative group"
-								key={i}
-							>
-								<code className="text-gray-600">
-									<button
-										className="font-semibold hover:text-gray-500"
-										type="button"
-										onClick={handleTimestampClick}
-										value={timeStamp}
+			<ul
+				className="flex-1 text-sm overflow-y-auto"
+				ref={notesContainerRef}
+			>
+				{[...notes.messages]
+					.sort((a, b) =>
+						// eslint-disable-next-line no-nested-ternary
+						isSorted !== undefined
+							? isSorted
+								? a.timeStamp - b.timeStamp
+								: b.timeStamp - a.timeStamp
+							: 0
+					)
+					.map(({ timeStamp, message }, i) => (
+						<li
+							className="py-2 px-6 pr-12 hover:bg-gray-800 relative group"
+							key={i}
+						>
+							<code className="text-gray-600">
+								<button
+									className="font-semibold hover:text-gray-500"
+									type="button"
+									onClick={handleTimestampClick}
+									value={timeStamp}
+								>
+									{`[${format(timeStamp)}]`}
+								</button>
+								:{' '}
+							</code>
+
+							<ContentEditable
+								innerRef={(ref: any) => {
+									messageRefs.current[i] = ref;
+								}}
+								html={message}
+								className="inline w-full focus:shadow-outline"
+								onChange={handleEditMessage}
+								onKeyDown={(e) => {
+									if (e.key === 'Enter') {
+										e.preventDefault();
+
+										const index = messageRefs.current.findIndex(
+											(el) => el === e.currentTarget
+										);
+
+										editMessage(index, editedMessage);
+
+										e.currentTarget.blur();
+									}
+								}}
+							/>
+
+							<div className="absolute inset-y-0 right-0 flex items-center pr-3">
+								<button
+									className="hidden group-hover:block"
+									type="button"
+									value={i}
+									onClick={handleDeleteMessage}
+								>
+									<svg
+										className="fill-current"
+										xmlns="http://www.w3.org/2000/svg"
+										viewBox="0 0 24 24"
+										width="24"
+										height="24"
 									>
-										{`[${format(timeStamp)}]`}
-									</button>
-									:{' '}
-								</code>
-
-								<ContentEditable
-									innerRef={(ref: any) => {
-										messageRefs.current[i] = ref;
-									}}
-									html={message}
-									className="inline w-full focus:shadow-outline"
-									onChange={handleEditMessage}
-									onKeyDown={(e) => {
-										if (e.key === 'Enter') {
-											e.preventDefault();
-
-											const index = messageRefs.current.findIndex(
-												(el) => el === e.currentTarget
-											);
-
-											editMessage(index, editedMessage);
-
-											e.currentTarget.blur();
-										}
-									}}
-								/>
-
-								<div className="absolute inset-y-0 right-0 flex items-center pr-3">
-									<button
-										className="hidden group-hover:block"
-										type="button"
-										value={i}
-										onClick={handleDeleteMessage}
-									>
-										<svg
-											className="fill-current"
-											xmlns="http://www.w3.org/2000/svg"
-											viewBox="0 0 24 24"
-											width="24"
-											height="24"
-										>
-											<g data-name="Layer 2">
-												<g data-name="close">
-													<rect
-														width="24"
-														height="24"
-														transform="rotate(180 12 12)"
-														opacity="0"
-													/>
-													<path d="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z" />
-												</g>
+										<g data-name="Layer 2">
+											<g data-name="close">
+												<rect
+													width="24"
+													height="24"
+													transform="rotate(180 12 12)"
+													opacity="0"
+												/>
+												<path d="M13.41 12l4.3-4.29a1 1 0 1 0-1.42-1.42L12 10.59l-4.29-4.3a1 1 0 0 0-1.42 1.42l4.3 4.29-4.3 4.29a1 1 0 0 0 0 1.42 1 1 0 0 0 1.42 0l4.29-4.3 4.29 4.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42z" />
 											</g>
-										</svg>
-									</button>
-								</div>
-							</li>
-						))}
-				</ul>
-			</div>
+										</g>
+									</svg>
+								</button>
+							</div>
+						</li>
+					))}
+			</ul>
 			<input
 				className="border-t border-gray-800 w-full bg-gray-900 p-4"
 				type="text"
