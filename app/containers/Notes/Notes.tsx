@@ -139,7 +139,7 @@ function Notes({
 					)}
 				</button>
 			</div>
-			<div className="flex-1 text-sm overflow-y-scroll">
+			<div className="flex-1 text-sm">
 				<ul>
 					{notes?.map(({ timeStamp, message }, i) => (
 						<li
