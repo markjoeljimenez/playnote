@@ -8,7 +8,7 @@ import { Message } from '../Notes/Notes';
 
 type Props = {
 	setMedia(media: Media): void;
-	setMessages(messages: Message[]): void;
+	setMessages(messages: Message[], saved?: boolean): void;
 };
 
 function SelectMedia({ setMedia, setMessages }: Props) {
@@ -40,7 +40,7 @@ function SelectMedia({ setMedia, setMessages }: Props) {
 				};
 			}) as Message[];
 
-			setMessages(transformedContent);
+			setMessages(transformedContent, true);
 		}
 	}
 
@@ -63,8 +63,8 @@ function SelectMedia({ setMedia, setMessages }: Props) {
 function mapDispatchToProps(dispatch: any) {
 	return {
 		setMedia: (media: any) => dispatch(setMediaAction(media)),
-		setMessages: (messages: Message[]) =>
-			dispatch(setMessagesAction(messages)),
+		setMessages: (messages: Message[], saved?: boolean) =>
+			dispatch(setMessagesAction(messages, saved)),
 	};
 }
 

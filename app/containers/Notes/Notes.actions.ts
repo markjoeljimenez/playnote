@@ -8,10 +8,11 @@ export type Message = {
 	message: string;
 };
 
-export function setMessagesAction(messages: Message[]) {
+export function setMessagesAction(messages: Message[], saved?: boolean) {
 	return {
 		type: SET_MESSAGES,
 		messages,
+		saved,
 	};
 }
 

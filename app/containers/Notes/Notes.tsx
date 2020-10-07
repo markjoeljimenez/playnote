@@ -26,7 +26,10 @@ export type Message = {
 
 type Props = {
 	media: Media;
-	notes: Message[];
+	notes: {
+		messages: Message[];
+		saved: boolean;
+	};
 	setMessages(messages: Message[]): void;
 	editMessage(message: number, text?: string): void;
 	deleteMessage(message: number): void;
@@ -53,7 +56,7 @@ function Notes({
 	function handleMessageSubmit(e: KeyboardEvent<HTMLInputElement>) {
 		if (e.key === 'Enter' && e.currentTarget.value !== '') {
 			setMessages([
-				...notes,
+				...notes.messages,
 				{
 					timeStamp: playerRef.current?.getCurrentTime() ?? 0,
 					message: e.currentTarget.value,
@@ -62,10 +65,6 @@ function Notes({
 
 			e.currentTarget.value = '';
 		}
-	}
-
-	function handleSortClick(e: MouseEvent<HTMLButtonElement>) {
-		setIsSorted(!isSorted);
 	}
 
 	function handleTimestampClick(e: MouseEvent<HTMLButtonElement>) {
@@ -86,9 +85,16 @@ function Notes({
 		editedMessage = value;
 	}
 
+	function handleSortClick(e: MouseEvent<HTMLButtonElement>) {
+		setIsSorted(!isSorted);
+	}
+
 	// Init refs
 	useEffect(() => {
-		messageRefs.current = messageRefs.current.slice(0, notes?.length);
+		messageRefs.current = messageRefs.current.slice(
+			0,
+			notes?.messages.length
+		);
 
 		return () => {};
 	}, []);
@@ -96,7 +102,7 @@ function Notes({
 	// Update notes and send to IPCMAIN
 	useEffect(() => {
 		if (media) {
-			const text = notes.reduce(
+			const text = notes.messages.reduce(
 				(prev, curr) =>
 					// eslint-disable-next-line prefer-template
 					prev +
@@ -125,7 +131,11 @@ function Notes({
 	return (
 		<div className="flex-1 flex flex-col justify-between h-screen">
 			<div className="flex justify-between items-baseline p-4 pl-6 border-b border-gray-800">
-				<p className="text-gray-600">Saved</p>
+				{notes.saved ? (
+					<p className="text-gray-600">Saved</p>
+				) : (
+					<p className="text-gray-300">Unsaved</p>
+				)}
 				<button
 					className="hover:bg-gray-700 text-white font-bold py-2 px-4 rounded border border-gray-700"
 					type="button"
@@ -172,7 +182,7 @@ function Notes({
 			</div>
 			<div className="flex-1 text-sm">
 				<ul>
-					{notes?.map(({ timeStamp, message }, i) => (
+					{notes.messages?.map(({ timeStamp, message }, i) => (
 						<li
 							className="py-2 px-6 pr-12 hover:bg-gray-800 relative group"
 							key={i}
