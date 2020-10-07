@@ -27,8 +27,8 @@ function SelectMedia({ setMedia, setMessages }: Props) {
 			});
 
 			const transformedContent = content.map((s: string) => {
-				const time = s.match(/\[(.*?)\]/g);
-				// const test = s.indexOf(time!);
+				const time = s.match(/\[(.*?)\]:/g);
+				const message = s.split(time![0])[1].trim();
 
 				return {
 					timeStamp: time
@@ -36,7 +36,7 @@ function SelectMedia({ setMedia, setMessages }: Props) {
 								time[0].replace(/[[\]']+/g, '').split('|')[0]
 						  )
 						: undefined,
-					message: 'test',
+					message,
 				};
 			}) as Message[];
 

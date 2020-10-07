@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import React, { KeyboardEvent, MouseEvent, useEffect } from 'react';
+import { ipcRenderer } from 'electron';
 
 import setMessagesAction from './Notes.actions';
 import format from '../../scripts/time';
@@ -16,6 +17,8 @@ type Props = {
 	playerRef: any;
 };
 
+const CHANNEL_NAME = 'main';
+
 function Notes({ media, notes, setMessages, playerRef }: Props) {
 	function handleMessageSubmit(e: KeyboardEvent<HTMLInputElement>) {
 		if (e.key === 'Enter' && e.currentTarget.value !== '') {
@@ -31,25 +34,31 @@ function Notes({ media, notes, setMessages, playerRef }: Props) {
 		}
 	}
 
-	// useEffect(() => {
-	// 	if (media) {
-	// 		const text = notes.reduce(
-	// 			(prev, curr) =>
-	// 				// eslint-disable-next-line prefer-template
-	// 				prev +
-	// 				`[${curr.timeStamp}|${format(curr.timeStamp)}]: ${
-	// 					curr.message
-	// 				}\r\n`,
-	// 			''
-	// 		);
+	function handleTimestampClick(e: MouseEvent<HTMLButtonElement>) {
+		const { value } = e.currentTarget;
 
-	// 		ipcRenderer.sendSync(CHANNEL_NAME, {
-	// 			title: media.title,
-	// 			path: media.path,
-	// 			text,
-	// 		});
-	// 	}
-	// }, [notes]);
+		playerRef.current?.seekTo(parseFloat(value) - 1);
+	}
+
+	useEffect(() => {
+		if (media) {
+			const text = notes.reduce(
+				(prev, curr) =>
+					// eslint-disable-next-line prefer-template
+					prev +
+					`[${curr.timeStamp}|${format(curr.timeStamp)}]: ${
+						curr.message
+					}\r\n`,
+				''
+			);
+
+			ipcRenderer.send(CHANNEL_NAME, {
+				title: media.title,
+				// path: media.path.replace(/\.[^/.]+$/, ''),
+				text,
+			});
+		}
+	}, [notes]);
 
 	return (
 		<>
@@ -60,7 +69,7 @@ function Notes({ media, notes, setMessages, playerRef }: Props) {
 							<button
 								className="font-semibold hover:text-gray-500"
 								type="button"
-								// onClick={handleTimestampClick}
+								onClick={handleTimestampClick}
 								value={timeStamp}
 							>
 								{`[${format(timeStamp)}]`}
