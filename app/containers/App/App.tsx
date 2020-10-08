@@ -14,10 +14,6 @@ type Props = {
 	media: Media;
 };
 
-const DEFAULT_OPTIONS = {
-	parent: [''],
-};
-
 function App({ media }: Props) {
 	const playerRef = useRef<ReactPlayer | null>(null);
 	const [isError, setIsError] = useState<boolean>();
@@ -37,12 +33,7 @@ function App({ media }: Props) {
 			<div
 				className={clsx(
 					'flex-1 max-h-screen flex flex-col',
-					// eslint-disable-next-line no-nested-ternary
-					media && isError !== undefined
-						? isError
-							? 'hidden'
-							: 'block'
-						: 'hidden'
+					isError !== undefined && !isError ? 'block' : 'hidden'
 				)}
 			>
 				<div
@@ -58,7 +49,6 @@ function App({ media }: Props) {
 						width="100%"
 						height="auto"
 						ref={playerRef}
-						// options={DEFAULT_OPTIONS}
 						onError={() => {
 							setIsError(true);
 						}}
@@ -70,20 +60,12 @@ function App({ media }: Props) {
 				{/* <Description /> */}
 			</div>
 
-			{/* @TODO: Integrate routes? */}
-			{/* eslint-disable-next-line no-nested-ternary */}
-			{media && isError !== undefined ? (
-				!isError ? (
-					<>
-						<div className="border-l border-gray-800 w-2/6 flex flex-col">
-							<Notes playerRef={playerRef} />
-						</div>
-					</>
-				) : (
-					<div className="flex-1 flex items-center justify-center">
-						<SelectMedia />
+			{isError !== undefined && !isError ? (
+				<>
+					<div className="border-l border-gray-800 w-2/6 flex flex-col">
+						<Notes playerRef={playerRef} />
 					</div>
-				)
+				</>
 			) : (
 				<div className="flex-1 flex items-center justify-center">
 					<SelectMedia />
