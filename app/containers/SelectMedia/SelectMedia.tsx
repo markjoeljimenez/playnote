@@ -23,18 +23,8 @@ function SelectMedia({ setMediaActionAndNotes }: Props) {
 		}
 	}
 
-	// function handleUrlSubmit(e: React.KeyboardEvent<HTMLInputElement>) {
-	// 	if (e.key === 'Enter' && e.currentTarget.value !== '') {
-	// 		setMediaActionAndNotes({
-	// 			path: e.currentTarget.value,
-	// 		});
-	// 	}
-	// }
-
 	function handleFormSubmit(e: React.FormEvent<HTMLFormElement>) {
 		e.preventDefault();
-
-		console.log(urlRef.current.value);
 
 		if (urlRef.current?.value) {
 			setMediaActionAndNotes({
@@ -54,7 +44,7 @@ function SelectMedia({ setMediaActionAndNotes }: Props) {
 	return (
 		<form className="space-y-6 text-center" onSubmit={handleFormSubmit}>
 			<label
-				className="block border-gray-800 rounded-md border-dashed border-2 text-gray-600 p-5 hover:bg-gray-800 hover:border-gray-700 cursor-pointer"
+				className="inline-block border-gray-800 rounded-md border-dashed border-2 text-gray-600 p-5 hover:bg-gray-800 hover:border-gray-700 cursor-pointer"
 				htmlFor="selectLocal"
 			>
 				<p className="font-bold text-xl text-gray-400">Select Media</p>
@@ -74,16 +64,16 @@ function SelectMedia({ setMediaActionAndNotes }: Props) {
 				className="block border-gray-800 rounded-md border-dashed border-2 text-gray-600 hover:bg-gray-800 hover:border-gray-700 cursor-pointer"
 				htmlFor="enterUrl"
 			>
-				<span className="sr-only">URL</span>
+				<span className="sr-only">Youtube</span>
 				<input
 					ref={urlRef}
 					className="bg-transparent p-5"
 					id="enterUrl"
 					type="url"
-					pattern="https://.*"
+					pattern="https://www.youtube.*"
 					required
-					// onKeyDown={handleUrlSubmit}
-					placeholder="URL"
+					size={35}
+					placeholder="https://www.youtube.com/"
 				/>
 			</label>
 		</form>
