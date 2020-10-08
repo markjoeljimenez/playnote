@@ -71,6 +71,8 @@ function Notes({
 	function handleTimestampClick(e: MouseEvent<HTMLButtonElement>) {
 		const { value } = e.currentTarget;
 
+		console.log(playerRef);
+
 		playerRef.current?.seekTo(parseFloat(value) - 1);
 	}
 
