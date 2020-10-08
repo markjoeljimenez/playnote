@@ -1,6 +1,6 @@
 {
-	"name": "beebnote",
-	"productName": "BeebNote",
+	"name": "playnote",
+	"productName": "Playnote",
 	"version": "1.0.0",
 	"description": "A video note taking app.",
 	"scripts": {
@@ -52,8 +52,8 @@
 		]
 	},
 	"build": {
-		"productName": "BeebNote",
-		"appId": "org.develar.BeebNote",
+		"productName": "Playnote",
+		"appId": "org.develar.Playnote",
 		"files": [
 			"dist/",
 			"node_modules/",
@@ -92,7 +92,7 @@
 			"category": "Development"
 		},
 		"portable": {
-			"artifactName": "BeebNote.exe"
+			"artifactName": "Playnote.exe"
 		},
 		"directories": {
 			"buildResources": "resources",
@@ -104,7 +104,7 @@
 	},
 	"repository": {
 		"type": "git",
-		"url": "git+https://github.com/markjoeljimenez/beebnote.git"
+		"url": "git+https://github.com/markjoeljimenez/Playnote.git"
 	},
 	"author": {
 		"name": "Mark Jimenez",
@@ -113,7 +113,7 @@
 	},
 	"license": "MIT",
 	"bugs": {
-		"url": "https://github.com/markjoeljimenez/beebnote/issues"
+		"url": "https://github.com/markjoeljimenez/Playnote/issues"
 	},
 	"keywords": [
 		"electron",
@@ -127,7 +127,7 @@
 		"hot",
 		"reload"
 	],
-	"homepage": "https://github.com/markjoeljimenez/beebnote/issues#readme",
+	"homepage": "https://github.com/markjoeljimenez/Playnote/issues#readme",
 	"jest": {
 		"testURL": "http://localhost/",
 		"moduleNameMapper": {
