@@ -10,5 +10,5 @@ module.exports = {
 	variants: {
 		display: ['responsive', 'hover', 'focus', 'group-hover'],
 	},
-	plugins: [],
+	plugins: [require('@tailwindcss/typography')],
 };

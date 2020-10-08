@@ -14,10 +14,10 @@ function App({ media }: Props) {
 	const playerRef = useRef<ReactPlayer | null>(null);
 
 	return (
-		<div className="h-screen flex">
+		<div className="min-h-screen flex">
 			{media ? (
 				<>
-					<div className="flex-1 flex flex-col">
+					<div className="flex-1 max-h-screen overflow-y-auto">
 						<ReactPlayer
 							url={media.path}
 							controls
@@ -25,8 +25,47 @@ function App({ media }: Props) {
 							height="auto"
 							ref={playerRef}
 						/>
-						<div className="p-4 px-6 flex-1">
-							<h1 className="text-2xl">{media.title}</h1>
+						<div className="p-4 px-6 space-y-6 max-w-4xl mx-auto">
+							<div className="text-gray-200">
+								<h1 className="text-3xl font-bold">
+									{media.title}
+								</h1>
+								<h2 className="text-lg mt-2">
+									Lorem ipsum dolor sit amet, consectetur
+									adipiscing elit. Vivamus blandit vehicula
+									molestie. Quisque nec odio ac dolor dapibus
+									sagittis vel eget urna. Morbi nisi est,
+								</h2>
+								<div className="border-b border-gray-300 mt-6 w-16" />
+							</div>
+							<div className="prose text-gray-500">
+								<p>
+									Praesent tempus tristique tellus non auctor.
+									Pellentesque vitae vestibulum augue. Fusce
+									id lacus porttitor erat suscipit malesuada.
+									Fusce eu justo turpis.
+								</p>
+								<ul>
+									<li>
+										Ut semper facilisis ipsum non
+										pellentesque. Sed vitae scelerisque
+										nibh. Nam sollicitudin purus quam. Nam
+										eget quam vestibulum, lacinia justo ac
+									</li>
+									<li>
+										Ut semper facilisis ipsum non
+										pellentesque. Sed vitae scelerisque
+										nibh. Nam sollicitudin purus quam. Nam
+										eget quam vestibulum, lacinia justo ac
+									</li>
+									<li>
+										Ut semper facilisis ipsum non
+										pellentesque. Sed vitae scelerisque
+										nibh. Nam sollicitudin purus quam. Nam
+										eget quam vestibulum, lacinia justo ac
+									</li>
+								</ul>
+							</div>
 						</div>
 					</div>
 					<div className="border-l border-gray-800 w-2/6 flex flex-col">
