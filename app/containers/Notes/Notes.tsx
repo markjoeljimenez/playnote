@@ -117,7 +117,7 @@ function Notes({
 				''
 			);
 
-			ipcRenderer.send(CHANNEL_NAME, {
+			ipcRenderer.send(CHANNEL_NAME, notes.saved, {
 				title: media.title,
 				text,
 			});

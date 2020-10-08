@@ -21,14 +21,41 @@ type Data = {
 
 export default class MenuBuilder {
 	mainWindow: BrowserWindow;
-	data: Data | undefined;
+	private data?: Data;
+	private save?: boolean;
 
 	constructor(mainWindow: BrowserWindow) {
 		this.mainWindow = mainWindow;
 	}
 
-	sendData(data: Data) {
+	sendData(save?: boolean, data?: Data) {
 		this.data = data;
+
+		if (save) {
+			this.save = save;
+		}
+	}
+
+	private saveFile() {
+		const absolutePath = dialog.showSaveDialogSync({
+			defaultPath: this.data?.title,
+			filters: [
+				{
+					name: 'Text Documents (*.txt)',
+					extensions: ['txt', 'text'],
+				},
+			],
+		});
+
+		if (absolutePath && this.data?.text) {
+			fs.writeFile(absolutePath, this.data.text, (err) => {
+				if (err) throw err;
+
+				this.mainWindow.webContents.send('SAVED', true);
+
+				this.save = true;
+			});
+		}
 	}
 
 	buildMenu(): Menu {
@@ -239,31 +266,10 @@ export default class MenuBuilder {
 					{
 						label: '&Save',
 						accelerator: 'Ctrl+S',
+						visible: this.data !== undefined,
+						enabled: !this.save,
 						click: () => {
-							const absolutePath = dialog.showSaveDialogSync({
-								defaultPath: this.data?.title,
-								filters: [
-									{
-										name: 'Text Documents (*.txt)',
-										extensions: ['txt', 'text'],
-									},
-								],
-							});
-
-							if (absolutePath && this.data?.text) {
-								fs.writeFile(
-									absolutePath,
-									this.data.text,
-									(err) => {
-										if (err) throw err;
-
-										this.mainWindow.webContents.send(
-											'SAVED',
-											true
-										);
-									}
-								);
-							}
+							this.saveFile();
 						},
 					},
 					{
@@ -294,6 +300,19 @@ export default class MenuBuilder {
 						label: '&Close',
 						accelerator: 'Ctrl+W',
 						click: () => {
+							if (!this.save) {
+								const index = dialog.showMessageBoxSync({
+									type: 'warning',
+									message: "You haven't saved your changes.",
+									detail: 'Would you like to save them now?',
+									buttons: ['Yes', 'No'],
+								});
+
+								if (index === 0) {
+									this.saveFile();
+								}
+							}
+
 							this.mainWindow.close();
 						},
 					},
@@ -340,41 +359,6 @@ export default class MenuBuilder {
 									},
 								},
 						  ],
-			},
-			{
-				label: 'Help',
-				submenu: [
-					{
-						label: 'Learn More',
-						click() {
-							shell.openExternal('https://electronjs.org');
-						},
-					},
-					{
-						label: 'Documentation',
-						click() {
-							shell.openExternal(
-								'https://github.com/electron/electron/tree/master/docs#readme'
-							);
-						},
-					},
-					{
-						label: 'Community Discussions',
-						click() {
-							shell.openExternal(
-								'https://www.electronjs.org/community'
-							);
-						},
-					},
-					{
-						label: 'Search Issues',
-						click() {
-							shell.openExternal(
-								'https://github.com/electron/electron/issues'
-							);
-						},
-					},
-				],
 			},
 		];
 
