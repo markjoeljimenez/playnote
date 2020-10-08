@@ -17,7 +17,7 @@ function App({ media }: Props) {
 		<div className="min-h-screen flex">
 			{media ? (
 				<>
-					<div className="flex-1 max-h-screen overflow-y-auto">
+					<div className="flex-1 max-h-screen flex flex-col">
 						<ReactPlayer
 							url={media.path}
 							controls
@@ -25,7 +25,7 @@ function App({ media }: Props) {
 							height="auto"
 							ref={playerRef}
 						/>
-						<div className="p-4 px-6 space-y-6 max-w-4xl mx-auto">
+						<div className="p-12 py-10 space-y-6 max-w-4xl mx-auto overflow-y-auto">
 							<div className="text-gray-200">
 								<h1 className="text-3xl font-bold">
 									{media.title}

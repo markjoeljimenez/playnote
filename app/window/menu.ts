@@ -30,10 +30,7 @@ export default class MenuBuilder {
 
 	sendData(save?: boolean, data?: Data) {
 		this.data = data;
-
-		if (save) {
-			this.save = save;
-		}
+		this.save = save;
 	}
 
 	private saveFile() {
@@ -267,7 +264,7 @@ export default class MenuBuilder {
 						label: '&Save',
 						accelerator: 'Ctrl+S',
 						visible: this.data !== undefined,
-						enabled: !this.save,
+						enabled: this.save !== undefined ? !this.save : false,
 						click: () => {
 							this.saveFile();
 						},
@@ -300,16 +297,22 @@ export default class MenuBuilder {
 						label: '&Close',
 						accelerator: 'Ctrl+W',
 						click: () => {
-							if (!this.save) {
-								const index = dialog.showMessageBoxSync({
-									type: 'warning',
-									message: "You haven't saved your changes.",
-									detail: 'Would you like to save them now?',
-									buttons: ['Yes', 'No'],
-								});
+							if (this.save !== undefined) {
+								if (!this.save) {
+									const index = dialog.showMessageBoxSync({
+										type: 'warning',
+										message:
+											"You haven't saved your changes.",
+										detail:
+											'Would you like to save them now?',
+										buttons: ['Yes', 'No', 'Cancel'],
+									});
 
-								if (index === 0) {
-									this.saveFile();
+									if (index === 0) {
+										this.saveFile();
+									} else if (index === 2) {
+										return;
+									}
 								}
 							}
 

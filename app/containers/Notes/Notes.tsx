@@ -25,7 +25,7 @@ type Props = {
 	media: Media;
 	notes: {
 		messages: Message[];
-		saved: boolean;
+		saved?: boolean;
 	};
 	setMessages(messages: Message[], saved: boolean): void;
 	editMessage(message: number, text?: string): void;
@@ -116,6 +116,8 @@ function Notes({
 					}\r\n`,
 				''
 			);
+
+			console.log(notes);
 
 			ipcRenderer.send(CHANNEL_NAME, notes.saved, {
 				title: media.title,
