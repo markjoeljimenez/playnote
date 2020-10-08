@@ -59,7 +59,7 @@ function SelectMedia({ setMediaActionAndNotes }: Props) {
 					onChange={handleSelectMedia}
 				/>
 			</label>
-			<p>or</p>
+			{/* <p>or</p>
 			<label
 				className="block border-gray-800 rounded-md border-dashed border-2 text-gray-600 hover:bg-gray-800 hover:border-gray-700 cursor-pointer"
 				htmlFor="enterUrl"
@@ -75,7 +75,7 @@ function SelectMedia({ setMediaActionAndNotes }: Props) {
 					size={35}
 					placeholder="https://www.youtube.com/"
 				/>
-			</label>
+			</label> */}
 		</form>
 	);
 }
